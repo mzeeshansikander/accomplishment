@@ -16,9 +16,6 @@ export async function DELETE(request: NextRequest) {
     const { recruiter, errorResponse } = await authGuard(request);
     if (errorResponse) return errorResponse;
 
-    const body = await request.json().catch(() => ({}));
-    const fcmToken = body?.fcmToken || null;
-
     const subscription = recruiter?.subscription;
     if (isSubscriptionValid(subscription)) {
       await stripe.subscriptions.update(subscription?.transaction_id, {
@@ -36,24 +33,6 @@ export async function DELETE(request: NextRequest) {
       requestFunction: deleteRecruiterProfile,
       requestBody: { profileId: recruiter?.profile_id },
     });
-
-    if (fcmToken) {
-      const fcmTokenDeletion = await supabasePromiseResolver({
-        requestFunction: deleteFcmToken,
-        requestBody: { profileId: recruiter?.profile_id, fcmToken: fcmToken },
-      });
-
-      if (!fcmTokenDeletion?.success) {
-        return response(
-          {
-            message: 'Fcm Token Deletion failed',
-            data: null,
-            error: fcmTokenDeletion?.error,
-          },
-          400,
-        );
-      }
-    }
 
     if (!deleteRecruiterProfileResponse?.success) {
       return response(

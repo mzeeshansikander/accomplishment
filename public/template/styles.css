@@ -30,6 +30,12 @@
   --text-size-28: 28px;
   --text-size-22: 22px;
   --text-size-25: 25px;
+
+  --font-regular: 'Quicksand', sans-serif;
+  --font-medium: 'Quicksand', sans-serif;
+  --font-semibold: 'Quicksand', sans-serif;
+  --font-bold: 'Quicksand', sans-serif;
+
 }
 
 @page {
@@ -38,7 +44,7 @@
 }
 
 body {
-  font-family: 'Fredoka', sans-serif;
+  font-family: var(--font-regular);
   flex-direction: column;
   display: flex;
   gap: 24px;
@@ -63,5 +69,26 @@ body {
 }
 
 .quicksand {
-  font-family: 'Quicksand', sans-serif !important;
+  font-family: var(--font-regular) !important;
+}
+
+/* Font weight classes */
+.font-normal {
+  font-family: var(--font-regular);
+  font-weight: 400;
+}
+
+.font-medium {
+  font-family: var(--font-medium);
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-family: var(--font-semibold);
+  font-weight: 600;
+}
+
+.font-bold {
+  font-family: var(--font-bold);
+  font-weight: 700;
 }

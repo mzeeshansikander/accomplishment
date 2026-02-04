@@ -1,6 +1,5 @@
 import { corsOptions, response, supabasePromiseResolver } from '@/lib/supabase/helper';
-import { deleteFcmToken, setFcmToken, signIn } from '@/services/server/authService';
-import { getRecruiterProfileByEmail } from '@/services/server/recruiterService';
+import { deleteFcmToken } from '@/services/server/authService';
 import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
