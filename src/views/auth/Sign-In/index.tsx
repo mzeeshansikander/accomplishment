@@ -27,11 +27,17 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth.context';
 import { JSX } from 'react';
 
+// FCM Context
+import { useFCM } from '@/context/fcm.context';
+
 const SignInView = (): JSX.Element => {
   const { setEmail } = useAuth();
   const { push, refresh } = useRouter();
   const { forgetPassword, signUp, home, verifyEmail } = Routes;
   const { mutateAsync, isPending } = useSignInMutation();
+
+  // Get FCM token from context
+  const { fcmToken } = useFCM();
 
   const { handleChange, handleSubmit, values, errors, touched } = useFormik({
     initialValues: { email: '', password: '' },
@@ -40,10 +46,13 @@ const SignInView = (): JSX.Element => {
       const pass = password.trimEnd().trimStart();
 
       try {
-        const { data } = await mutateAsync({
+        const payload = {
           email: email.toLocaleLowerCase().trim(),
           password: pass,
-        });
+          ...(fcmToken && { fcmToken }),
+        };
+
+        const { data } = await mutateAsync(payload);
         const code = data?.code;
 
         if (code == 'verification_email_resend') {

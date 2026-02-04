@@ -26,18 +26,22 @@ import PhoneNumberInput from '../phone-input';
 
 interface IProps {
   profile_picture?: string;
+  role_position?: string;
   phone_number?: string;
   first_name?: string;
   last_name?: string;
+  company?: string;
   email?: string;
   iso2?: string;
 }
 
 const EditProfileModal: FC<IProps> = ({
   profile_picture = '',
+  role_position = '',
   phone_number = '',
   first_name = '',
   last_name = '',
+  company = '',
   email = '',
   iso2 = '',
 }): JSX.Element => {
@@ -46,37 +50,30 @@ const EditProfileModal: FC<IProps> = ({
 
   const { mutateAsync, isPending } = useEditProfileMutation();
 
-  const {
-    touched,
-    errors,
-    values,
-    handleChange,
-    handleSubmit,
-    resetForm,
-    setFieldValue,
-    dirty,
-    isValid,
-  } = useFormik({
-    initialValues: {
-      iso2,
-      phoneNumber: phone_number,
-      firstName: first_name,
-      lastName: last_name,
-      profileImage: profile_picture,
-    },
-    validationSchema: EditProfileSchema,
-    enableReinitialize: true,
-    onSubmit: async (values) => {
-      await mutateAsync(values, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['get-profile'], refetchType: 'all' });
-          toast.success('Profile Edit successfully');
-        },
-      });
-      setIsOpen(false);
-      resetForm();
-    },
-  });
+  const { touched, errors, values, handleChange, handleSubmit, resetForm, setFieldValue, dirty } =
+    useFormik({
+      initialValues: {
+        iso2,
+        company,
+        lastName: last_name,
+        firstName: first_name,
+        phoneNumber: phone_number,
+        rolePosition: role_position,
+        profileImage: profile_picture,
+      },
+      validationSchema: EditProfileSchema,
+      enableReinitialize: true,
+      onSubmit: async (values) => {
+        await mutateAsync(values, {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['get-profile'], refetchType: 'all' });
+            toast.success('Profile Edit successfully');
+          },
+        });
+        setIsOpen(false);
+        resetForm();
+      },
+    });
 
   return (
     <BasicModal
@@ -84,14 +81,19 @@ const EditProfileModal: FC<IProps> = ({
         child: <Image src={edit} alt="edit" width={24} height={24} className="cursor-pointer" />,
       }}
       footer={
-        <form onSubmit={handleSubmit} className="w-full flex-col flex gap-y-6">
-          <FileUploader
-            setFieldValue={setFieldValue}
-            value={values.profileImage}
-            name="profileImage"
-          />
+        <form
+          onSubmit={handleSubmit}
+          className="w-full flex-col flex gap-y-1 max-h-[50dvh] overflow-y-auto pr-3"
+        >
+          <div className="w-full flex items-center justify-center">
+            <FileUploader
+              setFieldValue={setFieldValue}
+              value={values.profileImage}
+              name="profileImage"
+            />
+          </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start gap-3">
             <Input
               error={touched.firstName ? errors.firstName : undefined}
               placeholder="Enter first name"
@@ -113,6 +115,26 @@ const EditProfileModal: FC<IProps> = ({
             />
           </div>
 
+          <Input
+            error={touched.company ? errors.company : undefined}
+            placeholder="Enter company name"
+            onChange={handleChange}
+            value={values.company}
+            className="bg-white"
+            label="Company"
+            name="company"
+          />
+
+          <Input
+            error={touched.rolePosition ? errors.rolePosition : undefined}
+            placeholder="Enter role/position"
+            value={values.rolePosition}
+            onChange={handleChange}
+            className="bg-white"
+            label="Role/Position"
+            name="rolePosition"
+          />
+
           <Input value={email} disabled label="Email Address" />
 
           <PhoneNumberInput
@@ -126,11 +148,7 @@ const EditProfileModal: FC<IProps> = ({
           />
 
           <DialogClose asChild>
-            <Button
-              className="w-full h-14 rounded-xl"
-              type="submit"
-              disabled={!dirty || !isValid || isPending}
-            >
+            <Button type="submit" className="w-full h-14 rounded-xl" disabled={!dirty || isPending}>
               Save Changes
             </Button>
           </DialogClose>

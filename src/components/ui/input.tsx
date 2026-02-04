@@ -36,7 +36,7 @@ function Input({ className, type, label, error, required, ...props }: IProps) {
         {...props}
       />
 
-      {error && <span className="text-destructive text-sm font-normal">{error}</span>}
+      {error && <span className={`text-destructive text-sm font-normal`}>{error}</span>}
 
       {type === 'password' && (
         <span

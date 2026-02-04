@@ -15,13 +15,19 @@ import Image from 'next/image';
 
 // Types
 import { useGetFavoriteCandidateQuery } from '@/services/others/favorite/get-favorite-candidate';
-import { JSX, useState } from 'react';
+import { Fragment, JSX, useState } from 'react';
+
+// Firebase
+import { useFCMForegroundMessages } from '@/hooks/useFCMForegroundMessages';
 
 const HomeView = (): JSX.Element => {
   const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState(1);
 
-  const { data, isPending } = useGetFavoriteCandidateQuery({
+  // Handle foreground FCM messages (when app is open)
+  useFCMForegroundMessages();
+
+  const { data, isLoading } = useGetFavoriteCandidateQuery({
     skip: (page - 1) * 10,
     take: 10,
     search,
@@ -45,26 +51,30 @@ const HomeView = (): JSX.Element => {
         <Image src={header} alt="header" width={1128} height={350} />
       </div>
 
-      <Filters />
-
-      <Heading text="Top Recruits" width="medium" size="31" />
-
-      <SearchInput searchTerm={search} setSearchTerm={setSearch} />
-
-      {isPending ? (
+      {isLoading ? (
         <div className="w-full self-center h-[40dvh] flex items-center justify-center">
           <Loader />
         </div>
-      ) : meta_data?.total === 0 ? (
-        <div className="w-full self-center h-[40dvh] flex items-center justify-center">
-          <NoData />
-        </div>
       ) : (
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {candidate?.map((items, index) => (
-            <StudentCard key={index} {...items} />
-          ))}
-        </div>
+        <Fragment>
+          <Filters />
+
+          <Heading text="Top Recruits" width="medium" size="31" />
+
+          <SearchInput searchTerm={search} setSearchTerm={setSearch} />
+
+          {meta_data?.total === 0 ? (
+            <div className="w-full self-center h-[40dvh] flex items-center justify-center">
+              <NoData />
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {candidate?.map((items, index) => (
+                <StudentCard key={index} {...items} />
+              ))}
+            </div>
+          )}
+        </Fragment>
       )}
 
       <Pagination totalPages={meta_data?.skip || 0} setPage={setPage} />
