@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     profile: profile_photo_url,
     quote: quotIcons,
     grade,
-    name: `${selectedTheme?.icon}`,
+    name,
   };
 
   // Replace all fields
