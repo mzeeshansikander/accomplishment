@@ -119,7 +119,15 @@ function generateRandomNumberString(length: number) {
 }
 
 export async function POST(request: NextRequest) {
-  const { folio_id } = await request.json();
+  let folio_id: string | null = null;
+  try {
+    const body = await request.json();
+    folio_id = body.folio_id;
+    console.log('Received POST request for folio_id:', folio_id);
+  } catch (e) {
+    console.error('Error parsing request body:', e);
+    return response({ data: null, message: 'Invalid JSON in request body', error: e }, 400);
+  }
 
   let browser: Browser | null = null;
 
@@ -133,35 +141,47 @@ export async function POST(request: NextRequest) {
   };
 
   try {
+    console.log('Fetching folio row from database...');
     // 1. Get folio row from table (for pdf_url + candidate_id)
     const { data: folioRow, error: folioRowError } = await supabase
       .from('folio')
       .select('*')
-      .eq('id', folio_id)
+      .eq('id', folio_id as string)
       .single();
-    console.log(`\n${new Date().toLocaleTimeString()} \n ~ POST ~ folioRowError:`, folioRowError);
 
-    if (folioRowError || !folioRow) {
+    if (folioRowError) {
+      console.error('folioRowError:', folioRowError);
+      throw new Error(`Folio not found or query failed: ${folioRowError.message}`);
+    }
+    if (!folioRow) {
       throw new Error('Folio not found');
     }
 
     // delete old file if exists
     if (folioRow.pdf_url) {
+      console.log('Deleting old PDF:', folioRow.pdf_url);
       const { error: updateError } = await supabase
         .from('folio')
         .update({ pdf_url: null, updated_at: new Date().toISOString() })
-        .eq('id', folio_id);
+        .eq('id', folio_id as string);
+
       if (updateError) {
         throw new Error(`Failed to clear pdf_url: ${updateError.message}`);
       }
-      const oldPath = folioRow.pdf_url.split('/generated-folios/')[1];
+
+      const oldPath =
+        folioRow.pdf_url.split('/generated-folios/')[1] ||
+        folioRow.pdf_url.split('/generated_folios/')[1];
       if (oldPath) {
-        await supabase.storage.from('generated-folios').remove([oldPath]);
+        await supabase.storage.from('generated_folios').remove([oldPath]);
       }
     }
 
+    console.log('Fethcing detailed folio data via RPC...');
     // 2. Get detailed folio data via RPC (for HTML)
-    const folioData = await getFolioDocument(folio_id);
+    const folioData = await getFolioDocument(folio_id as string);
+    console.log('folioData received');
+
     const candidate = folioData?.data?.candidate_data;
 
     logData.profile_id = candidate?.profile_id ?? null;
@@ -169,19 +189,27 @@ export async function POST(request: NextRequest) {
     logData.email = candidate?.email ?? null;
 
     // 3. Generate PDF
+    console.log('Launching Chromium...');
     const candidateName = candidate?.first_name?.replaceAll(' ', '-') || 'Anonymous';
 
     browser = await launchChromium();
+    console.log('Chromium launched, creating new page...');
     const page = await browser.newPage();
+
+    console.log('Generating HTML content...');
     const html = await getFinalHtml(folioData);
+
+    console.log('Setting page content...');
     await page.setContent(html, { waitUntil: 'load' });
 
+    console.log('Generating PDF buffer...');
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
     });
 
     // 4. Upload new PDF
+    console.log('Uploading PDF to storage...');
     const fileName = `${candidateName}-${generateRandomNumberString(20)}.pdf`;
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('generated_folios')
@@ -190,22 +218,29 @@ export async function POST(request: NextRequest) {
         upsert: true,
       });
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw uploadError;
+    }
 
     const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/generated_folios/${uploadData?.path}`;
-    console.log(`\n${new Date().toLocaleTimeString()} \n ~ POST ~ publicUrl:`, publicUrl);
+    console.log('PDF uploaded, publicUrl:', publicUrl);
 
     // 5. Update folio row with new pdf_url
-    const { error: updateError } = await supabase
+    const { error: finalUpdateError } = await supabase
       .from('folio')
       .update({ pdf_url: publicUrl, updated_at: new Date().toISOString() })
-      .eq('id', folio_id);
+      .eq('id', folio_id as string);
 
-    if (updateError) throw updateError;
+    if (finalUpdateError) {
+      console.error('Final update error:', finalUpdateError);
+      throw finalUpdateError;
+    }
 
     // success log
     logData.message = 'PDF generated and stored successfully';
-    const { data, error } = await supabase.from('folio_pdf_generation_log').insert([logData]);
+    console.log('Logging success to folio_pdf_generation_log...');
+    await supabase.from('folio_pdf_generation_log').insert([logData]);
 
     return response(
       {
@@ -215,22 +250,29 @@ export async function POST(request: NextRequest) {
       },
       200,
     );
-  } catch (error) {
-    console.error('PDF generation/upload failed:', error);
+  } catch (error: any) {
+    console.error('PDF generation/upload failed error details:', error);
 
-    logData.message = (error as Error).message || 'Unknown error';
-    await supabase.from('folio_pdf_generation_log').insert([logData]);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logData.message = errorMessage || 'Unknown error';
+
+    try {
+      await supabase.from('folio_pdf_generation_log').insert([logData]);
+    } catch (logError) {
+      console.error('Failed to log error to database:', logError);
+    }
 
     return response(
       {
         data: null,
         message: logData?.message,
-        error: error,
+        error: errorMessage,
       },
       500,
     );
   } finally {
     if (browser) {
+      console.log('Closing browser...');
       await browser.close();
     }
   }

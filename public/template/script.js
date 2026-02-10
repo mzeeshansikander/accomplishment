@@ -314,27 +314,27 @@ const themeFonts = {
   elementary: {
     family: 'Quicksand',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote_elementary.3bbd133f.svg`,
+    icon: `${baseUrl}/quote_elementary.188a356e.svg`,
   },
   middle_school: {
     family: 'Nunito',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote_middle_school.c8cd0f98.svg`,
+    icon: `${baseUrl}/quote_middle_school.54513b45.svg`,
   },
   high_school: {
     family: 'Raleway',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote_high_school.7b6355f6.svg`,
+    icon: `${baseUrl}/quote_high_school.d76591dc.svg`,
   },
   college: {
     family: 'Playfair Display',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote_college.6af1cc2e.svg`,
+    icon: `${baseUrl}/quote_college.41ce7b0a.svg`,
   },
   postgraduate: {
     family: 'EB Garamond',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote_postgraduate.15a5fa38.svg`,
+    icon: `${baseUrl}/quote_postgraduate.84fdb53f.svg`,
   },
 };
 
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     profile: profile_photo_url,
     quote: quotIcons,
     grade,
-    name,
+    name: `${selectedTheme?.icon}`,
   };
 
   // Replace all fields
