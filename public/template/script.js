@@ -1,4 +1,4 @@
-const baseUrl = 'https://accomplishment-eta.vercel.app/_next/static/media';
+const baseUrl = 'https://accomplishment-vlys.vercel.app/_next/static/media';
 
 const icons = {
   mobileProgramming: `${baseUrl}/mobile-programming.3c5819cd.svg`,
@@ -312,24 +312,29 @@ function getDialCodeByISO(isoCode) {
 
 const themeFonts = {
   elementary: {
-    family: '',
+    family: 'Quicksand',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
+    icon: `${baseUrl}/quote-elementary.3bbd133f.svg`,
   },
   middle_school: {
     family: 'Nunito',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
+    icon: `${baseUrl}/quote-middle_school.c8cd0f98.svg`,
   },
   high_school: {
     family: 'Raleway',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
+    icon: `${baseUrl}/quote-high_school.7b6355f6.svg`,
   },
   college: {
     family: 'Playfair Display',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
+    icon: `${baseUrl}/quote-college.6af1cc2e.svg`,
   },
   postgraduate: {
     family: 'EB Garamond',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
+    icon: `${baseUrl}/quote-postgraduate.15a5fa38.svg`,
   },
 };
 
@@ -358,7 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } = candidate_data;
 
   const selectedTheme = themeFonts[theme] || themeFonts.elementary;
-  const fontFamily = `'${selectedTheme.family}', sans-serif`;
+  const quotIcons = selectedTheme.icon || icons.quote;
+  const fontFamily = selectedTheme.family;
 
   document.documentElement.style.setProperty('--font-regular', fontFamily);
   document.documentElement.style.setProperty('--font-medium', fontFamily);
@@ -386,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'page-title': name + ' Accomplishments',
     objective: objective_for_summary,
     profile: profile_photo_url,
-    quote: icons.quote,
+    quote: quotIcons,
     grade,
     name,
   };

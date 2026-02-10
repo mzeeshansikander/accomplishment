@@ -2,13 +2,12 @@
 
 import { response } from '@/lib/supabase/helper';
 import chromium from '@sparticuz/chromium-min';
-import { createClient } from '@supabase/supabase-js';
 import { NextRequest } from 'next/server';
 import path from 'path';
 import puppeteer, { Browser } from 'puppeteer-core';
 
-import fs from 'fs/promises';
 import { supabase } from '@/lib/supabase/server';
+import fs from 'fs/promises';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,18 +15,50 @@ export const dynamic = 'force-dynamic';
 // Launch Chromium
 async function launchChromium(): Promise<Browser> {
   const isServerless = Boolean(process.env.AWS_REGION || process.env.VERCEL);
+
+  if (isServerless) {
+    return puppeteer.launch({
+      executablePath: await chromium.executablePath(
+        'https://github.com/Sparticuz/chromium/releases/download/v129.0.0/chromium-v129.0.0-pack.tar',
+      ),
+      args: [...chromium.args, '--no-sandbox'],
+      headless: true,
+    });
+  }
+
+  // Local development paths
+  let executablePath = '';
+  if (process.platform === 'win32') {
+    const paths = [
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome\\Application\\chrome.exe'),
+    ];
+
+    for (const p of paths) {
+      try {
+        await fs.access(p);
+        executablePath = p;
+        break;
+      } catch {
+        continue;
+      }
+    }
+
+    if (!executablePath) {
+      throw new Error(
+        'Chrome executable not found. Please install Google Chrome or update the path in launchChromium().',
+      );
+    }
+  } else if (process.platform === 'darwin') {
+    executablePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  } else {
+    executablePath = '/usr/bin/google-chrome';
+  }
+
   return puppeteer.launch({
-    executablePath: isServerless
-      ? await chromium.executablePath(
-          'https://github.com/Sparticuz/chromium/releases/download/v129.0.0/chromium-v129.0.0-pack.tar',
-        )
-      : // : '/usr/bin/google-chrome',
-        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    // TODO: Remove local path when deploying edge function.
-    // executablePath: await chromium.executablePath(
-    //   "https://github.com/Sparticuz/chromium/releases/download/v129.0.0/chromium-v129.0.0-pack.tar"
-    // ),
-    args: isServerless ? [...chromium.args, '--no-sandbox'] : [],
+    executablePath,
+    args: [],
     headless: true,
   });
 }
@@ -108,7 +139,7 @@ export async function POST(request: NextRequest) {
       .select('*')
       .eq('id', folio_id)
       .single();
-    console.log('\n${new Date().toLocaleTimeString()} \n ~ POST ~ folioRow:', folioRowError);
+    console.log(`\n${new Date().toLocaleTimeString()} \n ~ POST ~ folioRowError:`, folioRowError);
 
     if (folioRowError || !folioRow) {
       throw new Error('Folio not found');
@@ -162,7 +193,7 @@ export async function POST(request: NextRequest) {
     if (uploadError) throw uploadError;
 
     const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/generated_folios/${uploadData?.path}`;
-    console.log('\n${new Date().toLocaleTimeString()} \n ~ POST ~ publicUrl:', publicUrl);
+    console.log(`\n${new Date().toLocaleTimeString()} \n ~ POST ~ publicUrl:`, publicUrl);
 
     // 5. Update folio row with new pdf_url
     const { error: updateError } = await supabase
