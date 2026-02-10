@@ -314,27 +314,27 @@ const themeFonts = {
   elementary: {
     family: 'Quicksand',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote-elementary.3bbd133f.svg`,
+    icon: `${baseUrl}/quote_elementary.3bbd133f.svg`,
   },
   middle_school: {
     family: 'Nunito',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote-middle_school.c8cd0f98.svg`,
+    icon: `${baseUrl}/quote_middle_school.c8cd0f98.svg`,
   },
   high_school: {
     family: 'Raleway',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote-high_school.7b6355f6.svg`,
+    icon: `${baseUrl}/quote_high_school.7b6355f6.svg`,
   },
   college: {
     family: 'Playfair Display',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote-college.6af1cc2e.svg`,
+    icon: `${baseUrl}/quote_college.6af1cc2e.svg`,
   },
   postgraduate: {
     family: 'EB Garamond',
     weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
-    icon: `${baseUrl}/quote-postgraduate.15a5fa38.svg`,
+    icon: `${baseUrl}/quote_postgraduate.15a5fa38.svg`,
   },
 };
 
