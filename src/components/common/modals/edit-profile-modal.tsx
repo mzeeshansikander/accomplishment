@@ -117,11 +117,11 @@ const EditProfileModal: FC<IProps> = ({
 
           <Input
             error={touched.company ? errors.company : undefined}
-            placeholder="Enter company name"
+            placeholder="Enter Institution/Business name"
+            label="Institution/Business"
             onChange={handleChange}
             value={values.company}
             className="bg-white"
-            label="Company"
             name="company"
           />
 

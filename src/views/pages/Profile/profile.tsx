@@ -35,7 +35,7 @@ const Profile: FC<IProps> = ({ data, isPending }): JSX.Element => {
     { label: 'Last Name', value: last_name },
     { label: 'Email', value: email },
     { label: 'Phone Number', value: number },
-    { label: 'Company', value: company },
+    { label: 'Institution/Business', value: company },
     { label: 'Role/Position', value: role_position },
   ];
 

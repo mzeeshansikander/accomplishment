@@ -131,10 +131,10 @@ const SignUpView = (): JSX.Element => {
 
         <Input
           error={touched.company ? errors.company : undefined}
-          placeholder="Enter Company Name"
+          placeholder="Enter Institution/Business Name"
+          label="Institution/Business Name"
           value={values['company']}
           onChange={handleChange}
-          label="Company Name"
           name="company"
           required
         />
