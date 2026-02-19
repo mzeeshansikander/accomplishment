@@ -95,13 +95,15 @@ const About: FC<IProps> = ({ candidate_data }): JSX.Element => {
         />
       </div>
 
-      <hr />
+      {(organization_name || grade || gpa) && <hr />}
 
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-x-1">
-          <Image src={school} alt="school" width={20} height={20} />
-          <p className="font-normal text-neutral-grey-100">{organization_name}</p>
-        </div>
+        {organization_name && (
+          <div className="flex items-center gap-x-1">
+            <Image src={school} alt="school" width={20} height={20} />
+            <p className="font-normal text-neutral-grey-100">{organization_name}</p>
+          </div>
+        )}
 
         {grade && (
           <Fragment>
