@@ -3,7 +3,6 @@ import { authGuard } from '@/services/server/authGuard';
 import { deleteRecruiterProfile, isSubscriptionValid } from '@/services/server/recruiterService';
 import { NextRequest } from 'next/server';
 import { stripe } from '../../../../lib/stripe';
-import { deleteFcmToken } from '@/services/server/authService';
 
 export const runtime = 'edge';
 

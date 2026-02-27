@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import { generateFolioName } from '@/lib/pdf-shortener';
 import { response } from '@/lib/supabase/helper';
 import chromium from '@sparticuz/chromium-min';
 import { NextRequest } from 'next/server';
@@ -57,22 +58,22 @@ async function launchChromium(): Promise<Browser> {
   }
 
   return puppeteer.launch({
-    executablePath,
-    args: [],
+    executablePath: isServerless
+      ? await chromium.executablePath(
+          'https://github.com/Sparticuz/chromium/releases/download/v129.0.0/chromium-v129.0.0-pack.tar',
+        )
+      : // : '/usr/bin/google-chrome',
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    // "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+    // TODO: Remove local path when deploying edge function.
+    // executablePath: await chromium.executablePath(
+    //   "https://github.com/Sparticuz/chromium/releases/download/v129.0.0/chromium-v129.0.0-pack.tar"
+    // ),
+    args: isServerless ? [...chromium.args, '--no-sandbox'] : [],
     headless: true,
   });
 }
 
-// async function getFileText(bucket: string, filePath: string): Promise<string> {
-//   const isLocal = false;
-//   if (isLocal) {
-//     const localPath = path.join(process.cwd(), 'public', 'template', path.basename(filePath));
-//     return await fs.readFile(localPath, 'utf-8');
-//   }
-//   const { data, error } = await supabase.storage.from(bucket).download(filePath);
-//   if (error) throw error;
-//   return await data.text();
-// }
 async function getFileText(bucket: string, filePath: string): Promise<string> {
   const localPath = path.join(process.cwd(), 'public', 'template', filePath);
   return await fs.readFile(localPath, 'utf-8');
@@ -110,14 +111,34 @@ async function getFolioDocument(folioId: string) {
   return data;
 }
 
-function generateRandomNumberString(length: number) {
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += Math.floor(Math.random() * 10).toString();
-  }
-  return result;
-}
+async function uploadFolioWithRetry(
+  pdfBuffer: any,
+  firstName: string | undefined,
+  maxRetries = 3,
+): Promise<{ path: string; folioName: string }> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const folioName = generateFolioName(firstName);
 
+    const { data, error } = await supabase.storage
+      .from('generated_folios')
+      .upload(folioName, new Uint8Array(pdfBuffer), {
+        contentType: 'application/pdf',
+        upsert: false,
+      });
+
+    if (!error) {
+      return { path: data.path, folioName: folioName.replace('.pdf', '') };
+    }
+
+    // if (error?.statusCode !== '409') {
+    //   throw new Error(`Upload failed: ${error.message}`);
+    // }
+
+    console.warn(`Folio name conflict on attempt ${attempt + 1}: ${folioName}, retrying...`);
+  }
+
+  throw new Error('Failed to upload folio after max retries due to name conflicts');
+}
 export async function POST(request: NextRequest) {
   let folio_id: string | null = null;
   try {
@@ -209,28 +230,16 @@ export async function POST(request: NextRequest) {
     });
 
     // 4. Upload new PDF
-    console.log('Uploading PDF to storage...');
-    const fileName = `${candidateName}-${generateRandomNumberString(20)}.pdf`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('generated_folios')
-      .upload(fileName, new Uint8Array(pdfBuffer), {
-        contentType: 'application/pdf',
-        upsert: true,
-      });
+    const { path, folioName } = await uploadFolioWithRetry(pdfBuffer, candidate?.first_name);
 
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      throw uploadError;
-    }
-
-    const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/generated_folios/${uploadData?.path}`;
-    console.log('PDF uploaded, publicUrl:', publicUrl);
+    const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/generated_folios/${path}`;
+    const shortUrl = `${new URL(request.url).origin}/s/${folioName}`;
 
     // 5. Update folio row with new pdf_url
     const { error: finalUpdateError } = await supabase
       .from('folio')
-      .update({ pdf_url: publicUrl, updated_at: new Date().toISOString() })
-      .eq('id', folio_id as string);
+      .update({ pdf_url: publicUrl, short_url: shortUrl, updated_at: new Date().toISOString() })
+      .eq('id', folio_id);
 
     if (finalUpdateError) {
       console.error('Final update error:', finalUpdateError);
@@ -244,7 +253,7 @@ export async function POST(request: NextRequest) {
 
     return response(
       {
-        data: { publicUrl },
+        data: { publicUrl, shortUrl },
         message: logData.message,
         error: null,
       },
