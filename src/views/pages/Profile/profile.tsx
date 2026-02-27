@@ -5,6 +5,7 @@ import Loader from '@/components/common/loader';
 import DeleteModal from '@/components/common/modals/delete-modal';
 import EditProfileModal from '@/components/common/modals/edit-profile-modal';
 import { GetProfileResponseT } from '@/types/others/profile/get-recruiter-profile/get-profile-response';
+import parsePhoneNumber from 'libphonenumber-js';
 
 // Type
 import { FC, Fragment, JSX } from 'react';
@@ -30,11 +31,22 @@ const Profile: FC<IProps> = ({ data, isPending }): JSX.Element => {
     ? phone_number
     : `${phone_number && '+' + phone_number}`;
 
+  let countryCode = phone_number || '';
+  try {
+    const phoneNumber = parsePhoneNumber(number, (iso2 as 'US') || 'US');
+    if (phoneNumber) {
+      const formatNumber = phoneNumber.formatNational();
+      countryCode = `+${phoneNumber.countryCallingCode} ${formatNumber}`;
+    }
+  } catch (error) {
+    console.warn('Error parsing phone number:', error);
+  }
+
   const info = [
     { label: 'First Name', value: first_name },
     { label: 'Last Name', value: last_name },
     { label: 'Email', value: email },
-    { label: 'Phone Number', value: number },
+    { label: 'Phone Number', value: countryCode },
     { label: 'Institution/Business', value: company },
     { label: 'Role/Position', value: role_position },
   ];

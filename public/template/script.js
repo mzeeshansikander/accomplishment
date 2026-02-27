@@ -376,9 +376,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const name = `${first_name} ${last_name}`;
   const location = `${city}, ${country}`;
 
+  let countryCode = phone_number || '';
+  try {
+    const phoneNumber = libphonenumber.parsePhoneNumber(phone_number || '', iso2 || 'US');
+    if (phoneNumber) {
+      const formatNumber = phoneNumber.formatNational();
+      countryCode = `+${phoneNumber.countryCallingCode} ${formatNumber}`;
+    }
+  } catch (error) {
+    console.warn('Error parsing phone number:', error);
+  }
+
   const contacts = [
     { icon: icons.email, value: email },
-    { icon: icons.call, value: (getDialCodeByISO(iso2 || 'us') || '') + ' ' + phone_number },
+    { icon: icons.call, value: countryCode },
     { icon: icons.location, value: location },
     { icon: icons.link, value: link },
   ];

@@ -5,26 +5,39 @@ import location from 'public/icons/location.svg';
 import sms from 'public/icons/sms.svg';
 
 // Type
-import { getDialCodeByISO } from '@/utils/iso-to-dial-code';
+import { parsePhoneNumber } from 'libphonenumber-js';
 import { StaticImageData } from 'next/image';
 
 type IContact = Array<{ label?: string; icon: StaticImageData }>;
 
 export const contacts = ({
-  iso,
   link,
   email,
   address,
   phone_number,
+  iso2,
 }: {
-  iso: string;
   link?: string;
   email?: string;
   phone_number?: string;
   address?: string;
-}): IContact => [
-  { icon: sms, label: email },
-  { icon: call, label: (getDialCodeByISO(iso) || '') + ' ' + phone_number },
-  { icon: location, label: address },
-  { icon: linkIcon, label: link },
-];
+  iso2?: string;
+}): IContact => {
+  let countryCode = phone_number || '';
+  try {
+    const phoneNumber = parsePhoneNumber(phone_number || '', (iso2 as 'US') || 'US');
+    if (phoneNumber) {
+      const formatNumber = phoneNumber.formatNational();
+      countryCode = `+${phoneNumber.countryCallingCode} ${formatNumber}`;
+    }
+  } catch (error) {
+    console.warn('Error parsing phone number:', error);
+  }
+
+  return [
+    { icon: sms, label: email },
+    { icon: call, label: countryCode },
+    { icon: location, label: address },
+    { icon: linkIcon, label: link },
+  ];
+};
