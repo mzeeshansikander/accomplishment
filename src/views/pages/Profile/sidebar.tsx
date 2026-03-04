@@ -10,10 +10,6 @@ import { sidebar } from '@/constants/profile';
 // Enum
 import { PROFILE_ENUM } from '@/enum/profile.enum';
 
-// Cookie
-
-// Router
-
 // Types
 import { useAuth } from '@/context/auth.context';
 import { useFCM } from '@/context/fcm.context';
