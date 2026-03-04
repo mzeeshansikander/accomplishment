@@ -377,14 +377,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const location = `${city}, ${country}`;
 
   let countryCode = phone_number || '';
-  try {
-    const phoneNumber = libphonenumber.parsePhoneNumber(phone_number || '', iso2 || 'US');
-    if (phoneNumber) {
-      const formatNumber = phoneNumber.formatNational();
-      countryCode = `+${phoneNumber.countryCallingCode} ${formatNumber}`;
+  if (phone_number) {
+    try {
+      const normalized = phone_number.replace(/[^\d+]/g, '');
+      const phoneNumber = libphonenumber.parsePhoneNumber(normalized, (iso2 || 'US').toUpperCase());
+      if (phoneNumber) {
+        countryCode = phoneNumber.formatNational();
+      }
+    } catch (error) {
+      console.warn('Error parsing phone number:', error);
+      const digits = phone_number.replace(/\D/g, '');
+      if (digits.length === 10) {
+        countryCode = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      } else if (digits.length === 11 && digits.startsWith('1')) {
+        const d = digits.slice(1);
+        countryCode = `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+      }
     }
-  } catch (error) {
-    console.warn('Error parsing phone number:', error);
   }
 
   const contacts = [

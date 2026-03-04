@@ -4,8 +4,8 @@ import linkIcon from 'public/icons/link.svg';
 import location from 'public/icons/location.svg';
 import sms from 'public/icons/sms.svg';
 
-// Type
-import { parsePhoneNumber } from 'libphonenumber-js';
+// Utility
+import { formatPhoneNumber } from '@/utils/format-phone';
 import { StaticImageData } from 'next/image';
 
 type IContact = Array<{ label?: string; icon: StaticImageData }>;
@@ -23,20 +23,11 @@ export const contacts = ({
   address?: string;
   iso2?: string;
 }): IContact => {
-  let countryCode = phone_number || '';
-  try {
-    const phoneNumber = parsePhoneNumber(phone_number || '', (iso2 as 'US') || 'US');
-    if (phoneNumber) {
-      const formatNumber = phoneNumber.formatNational();
-      countryCode = `+${phoneNumber.countryCallingCode} ${formatNumber}`;
-    }
-  } catch (error) {
-    console.warn('Error parsing phone number:', error);
-  }
+  const formattedPhone = formatPhoneNumber(phone_number, iso2);
 
   return [
     { icon: sms, label: email },
-    { icon: call, label: countryCode },
+    { icon: call, label: formattedPhone },
     { icon: location, label: address },
     { icon: linkIcon, label: link },
   ];
