@@ -33,14 +33,14 @@ const EmploymentCard: FC<IProps> = ({ form_data }) => {
         </div>
         <div>
           <Heading
-            className="!text-base !text-heading font-quicksand !break-all"
+            className="!text-base !text-heading font-quicksand !break-words"
             text={form_data?.job_title ?? 'N/A'}
             width="medium"
           />
-          <p className="font-quicksand text-neutral-grey-80 font-normal text-sm break-all">
+          <p className="font-quicksand text-neutral-grey-80 font-normal text-sm break-words">
             {form_data?.company}
           </p>
-          <p className="mt-2 font-quicksand text-[var(--gray-80)] font-normal text-sm break-all">
+          <p className="mt-2 font-quicksand text-[var(--gray-80)] font-normal text-sm break-words">
             {formatToDDMMMYYYY(form_data?.start_date ?? '')} -{' '}
             {!form_data?.end_date ? 'Ongoing' : formatToDDMMMYYYY(form_data?.end_date ?? '')}
           </p>
@@ -61,7 +61,7 @@ const EmploymentCard: FC<IProps> = ({ form_data }) => {
       {link && (
         <div className="flex items-center gap-x-2 pl-3">
           <Image src={linkIcon} className="size-6" alt="" />
-          <Link href={validUrl} className="text-[var(--blue)] font-normal font-quicksand break-all">
+          <Link href={validUrl} className="text-[var(--blue)] font-normal font-quicksand break-words">
             {link}
           </Link>
         </div>

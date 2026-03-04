@@ -32,7 +32,7 @@ const LanguageCard: FC<IProps> = ({ form_data }) => {
   return (
     <Box>
       <div>
-        {title && <p className="font-medium !text-heading font-quicksand break-all ">{title}</p>}
+        {title && <p className="font-medium !text-heading font-quicksand break-words ">{title}</p>}
         {date && (
           <p className="font-quicksand text-[var(--gray-80)] font-normal text-sm">
             {formatToMDYYYY(date)}
@@ -77,7 +77,7 @@ const LanguageCard: FC<IProps> = ({ form_data }) => {
       {link && (
         <div className="flex items-center gap-x-2">
           <Image src={linkIcon} className="size-6" alt="" />
-          <Link href={validUrl} className="text-[var(--blue)] font-normal font-quicksand break-all">
+          <Link href={validUrl} className="text-[var(--blue)] font-normal font-quicksand break-words">
             {link}
           </Link>
         </div>
@@ -86,7 +86,7 @@ const LanguageCard: FC<IProps> = ({ form_data }) => {
       {notes && (
         <div className="flex gap-x-1.5 items-start">
           <Image src={note} alt="note" className="size-6" />
-          <p className="text-[var(--gray-80)] text-sm font-normal font-quicksand break-all">
+          <p className="text-[var(--gray-80)] text-sm font-normal font-quicksand break-words">
             {notes}
           </p>
         </div>

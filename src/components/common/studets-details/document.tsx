@@ -31,7 +31,7 @@ const Document: FC<IProps> = ({ certificate_urls, title }) => {
               PDF
             </p>
             <div>
-              <p className="text-neutral-grey-100 text-sm font-medium break-all line-clamp-1">
+              <p className="text-neutral-grey-100 text-sm font-medium break-words line-clamp-1">
                 {getFileNameFromUrl(url) ?? 'Certificate'}
               </p>
               <p className="text-neutral-grey-80 text-sm">782.3Kb</p>

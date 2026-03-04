@@ -16,7 +16,7 @@ const CustomCard: FC<IProps> = ({ form_data }) => {
     <Box className="w-full !gap-y-3">
       <div>
         {accomplishment_name && (
-          <p className="font-medium !text-heading font-quicksand break-all ">
+          <p className="font-medium !text-heading font-quicksand break-words ">
             {accomplishment_name}
           </p>
         )}
@@ -29,7 +29,7 @@ const CustomCard: FC<IProps> = ({ form_data }) => {
       {notes && (
         <div className="flex gap-x-1.5">
           <Image src={note} alt="building" className="size-6" />
-          <p className="text-neutral-grey-80 text-sm font-normal font-quicksand break-all">
+          <p className="text-neutral-grey-80 text-sm font-normal font-quicksand break-words">
             {notes}
           </p>
         </div>

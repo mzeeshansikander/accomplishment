@@ -31,7 +31,7 @@ const TalentsDetailsModal: FC<IProps> = ({ form_data }) => {
             <Image alt="title/award" src={magicStar} width={24} height={24} />
           </div>
           <div className="gap-x-1 flex items-center justify-between w-full">
-            <p className="text-heading font-medium break-all">{form_data?.name}</p>
+            <p className="text-heading font-medium break-words">{form_data?.name}</p>
             <p className="text-neutral-grey-80 text-sm min-w-fit">
               {formatToDDMMMYYYY(form_data?.date ?? '')}
             </p>

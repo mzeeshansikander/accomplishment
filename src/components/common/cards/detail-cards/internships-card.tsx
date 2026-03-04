@@ -44,7 +44,7 @@ const InternshipsCard: FC<IProps> = ({ form_data }) => {
             )}
 
             {company && (
-              <p className="!text-sm font-normal text-neutral-grey-80 font-quicksand break-all">
+              <p className="!text-sm font-normal text-neutral-grey-80 font-quicksand break-words">
                 {company}
               </p>
             )}
@@ -81,7 +81,7 @@ const InternshipsCard: FC<IProps> = ({ form_data }) => {
       {link && (
         <div className="flex items-center gap-x-2 pl-3">
           <Image src={linkIcon} className="size-6" alt="" />
-          <Link href={validUrl} className="text-[var(--blue)] font-normal font-quicksand break-all">
+          <Link href={validUrl} className="text-[var(--blue)] font-normal font-quicksand break-words">
             {link}
           </Link>
         </div>

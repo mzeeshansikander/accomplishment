@@ -23,7 +23,7 @@ const SemesterAtSeaCard: FC<IProps> = ({ form_data }) => {
 
   return (
     <Box className="w-full !gap-y-3">
-      {title && <p className="font-medium !text-heading font-quicksand break-all ">{title}</p>}
+      {title && <p className="font-medium !text-heading font-quicksand break-words ">{title}</p>}
       {(destination || date) && (
         <div className="flex items-center gap-x-3">
           <Image src={routing} alt="routing" className="size-6" />
@@ -33,7 +33,7 @@ const SemesterAtSeaCard: FC<IProps> = ({ form_data }) => {
             )}
 
             {date && (
-              <p className="font-quicksand text-[var(--gray-80)] font-normal text-sm break-all">
+              <p className="font-quicksand text-[var(--gray-80)] font-normal text-sm break-words">
                 {date}
               </p>
             )}

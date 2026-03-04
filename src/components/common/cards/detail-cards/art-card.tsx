@@ -16,7 +16,7 @@ const ArtCard: FC<IProps> = ({ form_data }) => {
     <Box className="w-full !gap-y-3">
       <div>
         {accomplishment_name && (
-          <p className="font-medium !text-heading font-quicksand break-all ">
+          <p className="font-medium !text-heading font-quicksand break-words ">
             {accomplishment_name}
           </p>
         )}
@@ -31,7 +31,7 @@ const ArtCard: FC<IProps> = ({ form_data }) => {
       {notes && (
         <div className="flex gap-x-2 items-start">
           <Image src={note} alt="note" className="size-6" />
-          <p className="text-[var(--gray-80)] text-sm font-normal font-quicksand break-all line-clamp-2">
+          <p className="text-[var(--gray-80)] text-sm font-normal font-quicksand break-words line-clamp-2">
             {notes}
           </p>
         </div>

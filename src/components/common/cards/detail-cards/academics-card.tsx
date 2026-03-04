@@ -39,7 +39,7 @@ const AcademicsCard: FC<IProps> = ({ form_data }): JSX.Element => {
             text={form_data?.name || ''}
             width="medium"
           />
-          <p className="font-quicksand text-neutral-grey-80 font-normal text-sm break-all">
+          <p className="font-quicksand text-neutral-grey-80 font-normal text-sm break-words">
             {form_data?.school_or_institution || ''}
           </p>
         </div>
