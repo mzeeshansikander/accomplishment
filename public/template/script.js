@@ -857,7 +857,7 @@ const awardsCard = ({ title, date, institution }) => {
   <div class="box !gap-y-3">
     <div class="flex items-center gap-x-3">
       <div
-        class="w-9 h-9 rounded-full bg-[var(--yellow-light)] flex items-center justify-center"
+        class="min-w-9 min-h-9 rounded-full bg-[var(--yellow-light)] flex items-center justify-center"
       >
         <img src="${icons.cup}" alt="cup" class="size-6" />
       </div>
@@ -897,7 +897,7 @@ const talentsCard = ({ title, date, skill_required }) => {
   <div class="box !gap-y-3">
     <div class="flex items-center gap-x-3">
       <div
-        class="w-9 h-9 rounded-full bg-[var(--gray-10)] flex items-center justify-center"
+        class="min-w-9 min-h-9 rounded-full bg-[var(--gray-10)] flex items-center justify-center"
       >
         <img src="${icons.magicStar}" alt="star" class="size-6" />
       </div>
@@ -949,7 +949,7 @@ const certificationsCard = ({ title, date, institution }) => {
   <div class="box w-full !gap-y-3">
     <div class="flex items-center gap-x-3">
       <div
-        class="w-9 h-9 rounded-full bg-[var(--purple-light)] flex items-center justify-center"
+        class="min-w-9 min-h-9 rounded-full bg-[var(--purple-light)] flex items-center justify-center"
       >
         <img src="${icons.medalStar}" alt="star" class="size-6" />
       </div>
@@ -1100,7 +1100,7 @@ const employmentCard = ({
     <div class="box !gap-y-3">
       <div class="flex items-start gap-x-3">
         <div
-          class="w-9 h-9 rounded-full bg-[var(--blue-light)] flex items-center justify-center"
+          class="min-w-9 min-h-9 rounded-full bg-[var(--blue-light)] flex items-center justify-center"
         >
           <img src="${icons.briefcase}" alt="briefcase" class="size-6" />
         </div>
@@ -1529,7 +1529,7 @@ const volunteerCard = ({
     <div class="box !gap-y-3">
       <div class="flex items-start gap-x-3">
         <div
-          class="w-9 h-9 rounded-full bg-[var(--primary-10)] flex items-center justify-center"
+          class="min-w-9 min-h-9 rounded-full bg-[var(--primary-10)] flex items-center justify-center"
         >
           <img src="${icons.info}" alt="info" class="size-6" />
         </div>
@@ -1650,7 +1650,7 @@ const internshipsCard = ({
     <div class='flex justify-between'>
       <div class="flex items-start gap-x-3">
         <div
-          class="w-9 h-9 rounded-full bg-[var(--primary-20)] flex items-center justify-center"
+          class="min-w-9 min-h-9 rounded-full bg-[var(--primary-20)] flex items-center justify-center"
         >
           <img src="${icons.internships}" alt="internship" class="size-6" />
         </div>
